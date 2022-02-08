@@ -4,7 +4,7 @@ const cors = require('cors')
 const port = 3000
 const mongoose = require('mongoose')
 const morgan = require("morgan")
-const todoRouter = require('./modules/todos/doctorRouter')
+const todoRouter = require('./modules/doctors/doctorRouter')
 
 app.use(cors())
 app.use(morgan('combined'))

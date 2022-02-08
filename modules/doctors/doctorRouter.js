@@ -1,10 +1,16 @@
 const express = require("express"); 
 const doctorRouter = express.Router();
-const Doctor = require('./doctorModule');
+const Doctor = require('./doctorModel');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 //create new doctor
 doctorRouter.post('/', async (req, res, next) => {
     let doctor = new Doctor(req.body);
+    const {password} = doctor;
+    bcrypt.hash(password, saltRounds, function(err, hash) {
+        // Store hash in your password DB.
+    });
         try {
             await doctor.save();
             res.send(doctor);
