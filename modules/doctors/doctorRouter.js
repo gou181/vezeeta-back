@@ -1,59 +1,32 @@
 const express = require("express"); 
 const doctorRouter = express.Router();
-const Doctor = require('./doctorModel');
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
+const { logIn } = require('./doctorController')
+const { signUp } = require('./doctorController')
+const { findALLDoctors } = require('./doctorController')
+const { findDoctor } = require('./doctorController')
+const { editDoctor } = require('./doctorController')
+const { deleteDoctor } = require('./doctorController')
+const { errorHandler } = require('./middlewares')
 
-//create new doctor
-doctorRouter.post('/', async (req, res, next) => {
-    let doctor = new Doctor(req.body);
-    const {password} = doctor;
-    bcrypt.hash(password, saltRounds, function(err, hash) {
-        // Store hash in your password DB.
-    });
-        try {
-            await doctor.save();
-            res.send(doctor);
-        }catch(error){
-            error.status = 500;
-            next(error);
-        }   
-})
+//doctor sign up
+doctorRouter.post('/signUp', signUp)
 
-//get doctor by status
-doctorRouter.get('/', async (req, res) => {
-    const filterd = await Doctor.find({ status: "in-progress" })
-    res.send(filterd)
-})
+//doctor log in
+doctorRouter.post('/logIn', logIn)
+
+//get all doctors
+doctorRouter.get('/', findALLDoctors)
 
 //get doctor by id
-doctorRouter.get('/:id', async (req, res) => {
-    let user_id = req.params.id
-    const doctor = await Doctor.findById(user_id)
-    res.send(doctor)
-})
+doctorRouter.get('/:id', findDoctor)
 
 //edit doctor by id
-doctorRouter.patch('/:id', async(req, res) => {
-    let user_id = req.params.id
-    const doctor = await Doctor.updateOne(
-        { _id: user_id },
-        {
-            $set: {title : req.body.title, status : req.body.status}
-        }
-    )
-    res.send(doctor);
-})
+doctorRouter.patch('/:id', editDoctor)
 
 //delete doctor with id
-doctorRouter.delete('/:id', async(req, res) => {
-    let user_id = req.params.id
-    await Doctor.deleteOne({_id:user_id})
-    res.send("deleted successfully")
-})
+doctorRouter.delete('/:id', deleteDoctor)
 
-doctorRouter.use((err, req, res, next) => {
-    err.code = "somthing went wrong"
-    res.send(err)
-})
+// error handling middleware
+doctorRouter.use(errorHandler)
+
 module.exports = doctorRouter

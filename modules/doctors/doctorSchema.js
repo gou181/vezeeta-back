@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
 
 const doctorSchema = new mongoose.Schema({
     name:{
@@ -18,6 +19,12 @@ const doctorSchema = new mongoose.Schema({
     tel:Number,
     fees:Number
 });
+
+// doctorSchema.pre('save', async(next)=>{
+//     const saltedRounds = 10;
+//     this.password = await bcrypt.hash(this.password, saltedRounds)
+//     next()
+// })
 
 module.exports = doctorSchema;
   
