@@ -18,7 +18,7 @@ doctorRouter.post('/logIn', logIn)
 doctorRouter.get('/', findALLDoctors)
 
 //get doctor by id
-doctorRouter.get('/:id', findDoctor)
+doctorRouter.get('/doctor', findDoctor)
 
 //edit doctor by id
 doctorRouter.patch('/:id', editDoctor)

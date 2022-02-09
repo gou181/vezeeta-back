@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 
+//define static schema for all doctors
 const doctorSchema = new mongoose.Schema({
     name:{
         type:String,
