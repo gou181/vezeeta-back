@@ -16,10 +16,9 @@ const signUp = async (req, res, next) => {
 
     //define instance to store signed up doctor data in the database
     let doctor = new Doctor(req.body);
-
-    // hashing password with 10 saltrounds
-    doctor.password = await bcrypt.hash(doctor.password, saltRounds)
     try {
+        // hashing password with 10 saltrounds
+        doctor.password = await bcrypt.hash(doctor.password, saltRounds)
 
         //saving signed up doctor data in the database
         await doctor.save();
@@ -80,7 +79,7 @@ const logIn = async (req, res, next) => {
 // find all doctors function expression
 const findALLDoctors = async (req, res, next) => {
     try {
-        const doctors = await Doctor.find({});
+        const doctors = await Doctor.find({},{password:0});
 
         // throw error if there is no doctors
         if (!doctors) {
@@ -97,8 +96,8 @@ const findALLDoctors = async (req, res, next) => {
 
 }
 
-// find doctor by id function expression
-const findDoctor = async (req, res, next) => {
+// get profile info by token id function expression
+const getProfileInfo = async (req, res, next) => {
 
     // getting authorization access token from request headers
     let { authorization } = req.headers
@@ -108,7 +107,32 @@ const findDoctor = async (req, res, next) => {
         const payload = await asyncVerifyDoctor(authorization, secretKey)
 
         // get doctor data by id stored and encodded in access token
-        const doctor = await Doctor.findById(payload.id)
+        const doctor = await Doctor.findById(payload.id,{password:0})
+
+        // throw error if there is no doctor found
+        if (!doctor) {
+            throw new Error('no doctor found')
+        }
+
+        //send back response with doctor data
+        res.send(doctor)
+    }
+    catch (error) {
+        error.status = 404;
+
+        // send error to error handler middleware
+        next(error)
+    }
+
+
+}
+
+// get doctor details by id function expression
+const getDoctorDetails = async (req, res, next) => {
+    const user_id = req.params.id;
+    try {
+        // get doctor data by id stored and encodded in access token
+        const doctor = await Doctor.findById(user_id,{password:0})
 
         // throw error if there is no doctor found
         if (!doctor) {
@@ -200,7 +224,8 @@ module.exports = {
     logIn,
     signUp,
     findALLDoctors,
-    findDoctor,
+    getProfileInfo,
+    getDoctorDetails,
     editDoctor,
     deleteDoctor
 }
